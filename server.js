@@ -3,7 +3,7 @@
 
 const express = require('express');
 const path = require('path');
-
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -16,6 +16,7 @@ app.listen(PORT, (error) => {       //для прослушивания сооб
     error ? console.log(error) : console.log('listen port 3000');
 });
 
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static('styles')); // короче разрешаем браузеру читать стили, так изначально нельзя
 
 app.get('/', (req, res) => {
@@ -35,14 +36,41 @@ app.get('/contacts', (req, res) => {
 
 app.get('/posts/:id', (req, res) => {
     const title = 'Post Page';
-    res.render(createPath('post'), {title});
+    const post = {
+        id: '1',
+        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente quidem provident, dolores, vero laboriosam nemo mollitia impedit unde fugit sint eveniet, minima odio ipsum sed recusandae aut iste aspernatur dolorem.',
+        title: 'Post title',
+        date: '05.05.2021',
+        author: 'Yauhen',
+    };
+    res.render(createPath('post'), {title, post});
 });
 
 app.get('/posts', (req, res) => {
     const title = 'Posts Page';
-    res.render(createPath('posts'), {title});
+    const posts = [
+        {
+            id: '1',
+            text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente quidem provident, dolores, vero laboriosam nemo mollitia impedit unde fugit sint eveniet, minima odio ipsum sed recusandae aut iste aspernatur dolorem.',
+            title: 'Post title',
+            date: '05.05.2021',
+            author: 'Yauhen',
+        }
+    ];
+    res.render(createPath('posts'), {title, posts});
 });
 
+app.post('/new-post', (req, res) => {
+    const {title, author, text} = req.body;
+    const post = {
+        id: new Date(),
+        date: (new Date()).toLocaleDateString(),
+        title,
+        author,
+        text
+    }
+    res.render(createPath('post'), {post, title});
+});
 app.get('/new-post', (req, res) => {
     const title = 'New-post Page';
     res.render(createPath('new-post'), {title});
